@@ -7,7 +7,7 @@ const FormData = require('form-data');
 const sendEmail = require('./mailSend');
 
 const app = express();
-const PORT = 8080;
+const PORT = 3000;
 
 const upload = multer({ dest: 'uploads/' });
 
@@ -68,7 +68,7 @@ app.post('/getVideos', upload.array('userfiles'), async (req, res) => {
 
 
 app.get('/sendMail', async (req, res) => {
-    await sendEmail({to: 'kevin3709@naver.com'});
+    await sendEmail({to: req.query.mail});
     res.send('mail send');
 });
 
