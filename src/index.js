@@ -5,12 +5,14 @@ const axios = require('axios');
 const fs = require("fs");
 const FormData = require('form-data');
 const sendEmail = require('./mailSend');
+const cors = require('cors');
 
+const app = express();
 app.use(cors({
     origin: '*',
 }));
 
-const app = express();
+
 const PORT = 80;
 
 const upload = multer({ dest: 'uploads/' });
