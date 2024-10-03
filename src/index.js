@@ -6,6 +6,10 @@ const fs = require("fs");
 const FormData = require('form-data');
 const sendEmail = require('./mailSend');
 
+app.use(cors({
+    origin: '*',
+}));
+
 const app = express();
 const PORT = 80;
 
