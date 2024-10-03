@@ -30,7 +30,8 @@ app.post('/', upload.array('userfiles'), async (req, res) => {
     const files = req.files;
 
     if (!files || files.length === 0) {
-        return res.status(400).send('파일이 업로드되지 않았습니다.');
+        files == null
+        // return res.status(400).send('파일이 업로드되지 않았습니다.');
     }
     const formData = new FormData();
     files.forEach(file => {
@@ -38,6 +39,7 @@ app.post('/', upload.array('userfiles'), async (req, res) => {
     });
 
     try {
+        await sendEmail({to: mail});
         // const response = await axios.post('http://127.0.0.1:7777', formData, {
         //     headers: {
         //         ...formData.getHeaders()
@@ -53,12 +55,12 @@ app.post('/', upload.array('userfiles'), async (req, res) => {
         res.status(500).send('파일 처리 중 오류가 발생했습니다.');
 
     } finally {
-        await sendEmail({to: mail});
+        
         req.files.forEach(file => {
             console.log(file.path);
-            if (fs.existsSync(file.path)) {  // 파일 존재 여부 확인
+            if (fs.existsSync(file.path)) {
                 try {
-                    fs.unlinkSync(file.path);  // 파일 삭제
+                    fs.unlinkSync(file.path);
                     console.log(`파일 삭제 성공: ${file.path}`);
                 } catch (err) {
                     console.error(`파일 삭제 중 오류 발생: ${file.path}`, err.message);
