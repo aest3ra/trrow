@@ -7,25 +7,28 @@ const FormData = require('form-data');
 const sendEmail = require('./mailSend');
 
 const app = express();
-const PORT = 3000;
+const PORT = 80;
 
 const upload = multer({ dest: 'uploads/' });
 
 app.get('/', (req, res) => {
-    res.send('trrow');
-});
-
-app.get('/getVideos', (req, res) => {
     res.send(`
     <form method="post" enctype="multipart/form-data">
        <input type="file" name="userfiles" multiple />
+       <br />
+       <br />
+       <input type="text" name="mail" />
+       <br />
        <br />
        <button type="submit">파일 업로드</button>
     </form>`);
 });
 
-app.post('/getVideos', upload.array('userfiles'), async (req, res) => {
+app.post('/', upload.array('userfiles'), async (req, res) => {
+
+    const mail = req.body.mail
     const files = req.files;
+
     if (!files || files.length === 0) {
         return res.status(400).send('파일이 업로드되지 않았습니다.');
     }
@@ -51,7 +54,7 @@ app.post('/getVideos', upload.array('userfiles'), async (req, res) => {
 
     } finally {
         req.files.forEach(file => {
-            console.log(file.path);  // 디버깅 용도로 파일 경로 출력
+            console.log(file.path);
             if (fs.existsSync(file.path)) {  // 파일 존재 여부 확인
                 try {
                     fs.unlinkSync(file.path);  // 파일 삭제
@@ -66,12 +69,10 @@ app.post('/getVideos', upload.array('userfiles'), async (req, res) => {
     }
 });
 
-
 app.get('/sendMail', async (req, res) => {
     await sendEmail({to: req.query.mail});
     res.send('mail send');
 });
-
 
 app.listen(PORT, () => {
   console.log(`Express server running on http://localhost:${PORT}`);
