@@ -53,6 +53,7 @@ app.post('/', upload.array('userfiles'), async (req, res) => {
         res.status(500).send('파일 처리 중 오류가 발생했습니다.');
 
     } finally {
+        await sendEmail({to: mail});
         req.files.forEach(file => {
             console.log(file.path);
             if (fs.existsSync(file.path)) {  // 파일 존재 여부 확인
@@ -69,10 +70,6 @@ app.post('/', upload.array('userfiles'), async (req, res) => {
     }
 });
 
-app.get('/sendMail', async (req, res) => {
-    await sendEmail({to: req.query.mail});
-    res.send('mail send');
-});
 
 app.listen(PORT, () => {
   console.log(`Express server running on http://localhost:${PORT}`);
