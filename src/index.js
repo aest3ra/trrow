@@ -12,6 +12,8 @@ app.use(cors({
     origin: '*',
 }));
 
+app.use(express.urlencoded({ extended: true })); 
+app.use(express.json());
 
 const PORT = 80;
 
@@ -31,13 +33,12 @@ app.get('/', (req, res) => {
 });
 
 app.post('/', upload.array('userfiles'), async (req, res) => {
-
     const mail = req.body.mail
     const files = req.files;
 
     if (!files || files.length === 0) {
         files == null
-        // return res.status(400).send('파일이 업로드되지 않았습니다.');
+        return res.status(400).send('파일이 업로드되지 않았습니다.');
     }
     const formData = new FormData();
     files.forEach(file => {
@@ -55,7 +56,7 @@ app.post('/', upload.array('userfiles'), async (req, res) => {
         // const processedVideoPath = path.join(__dirname, 'upload', 'processedVideo.mp4');
         // fs.writeFileSync(processedVideoPath, response.data);
 
-        res.send('파일이 성공적으로 업로드 및 처리되었습니다.');
+        res.json({success: '파일이 성공적으로 업로드 및 처리되었습니다.'});
     } catch (error) {
         console.error('파일 처리 중 오류 발생:', error);
         res.status(500).send('파일 처리 중 오류가 발생했습니다.');
@@ -63,7 +64,6 @@ app.post('/', upload.array('userfiles'), async (req, res) => {
     } finally {
         
         req.files.forEach(file => {
-            console.log(file.path);
             if (fs.existsSync(file.path)) {
                 try {
                     fs.unlinkSync(file.path);
@@ -74,8 +74,9 @@ app.post('/', upload.array('userfiles'), async (req, res) => {
             } else {
                 console.warn(`파일이 이미 삭제되었거나 존재하지 않음: ${file.path}`);
             }
-        });
+    })
     }
+    
 });
 
 
